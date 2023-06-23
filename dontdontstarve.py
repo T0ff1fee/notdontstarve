@@ -1,5 +1,8 @@
 from time import*
 from pygame import*
+p = 1000
+amount_kill = 0
+
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, player_speed):
         super().__init__()
@@ -116,7 +119,10 @@ w5 = Wall(95, 158, 160, 110, 100, 10, 350)
 w6 = Wall(95, 158, 160, 200, 250, 200, 10)
 w7 = Wall(95, 158, 160, 200, 10, 10, 350)
 w8 = Wall(95, 158, 160, 480, 150, 10, 300)
-
+w9 = Wall(95, 158, 160, 485, 150, 10, 300)
+w10 = Wall(95, 158, 160, 205, 10, 10, 350)
+w11 = Wall(95, 158, 160, 200, 255, 200, 10)
+w12 = Wall(95, 158, 160, 115, 100, 10, 350)
 
 
 monster2 = Enemy2('spider.png', 320, 50, 2)
@@ -130,7 +136,7 @@ clock = time.Clock()
 FPS = 60
 
 font.init()
-font = font.Font(None, 70)
+font = font.Font(None, 30)
 win = font.render('YOU WIN!', True, (255, 215, 0))
 lose = font.render('YOU LOSE!', True, (180, 0, 0))
 
@@ -158,9 +164,14 @@ while game:
         w6.draw_wall()
         w7.draw_wall()
         w8.draw_wall()
-
+        w9.draw_wall()
+        w10.draw_wall()
+        p -= 1
         player.reset()
-        
+        score_kill = font.render(f'Вы врезались: '+ str(amount_kill), True, (255, 100, 100))
+        score_lose = font.render(f'Время: '+ str(p), True, (100, 255, 100))
+        window.blit(score_kill, (0, 30))
+        window.blit(score_lose, (550, 30))
         monster2.reset()
         monster4.reset()
         #monster3.reset()
@@ -169,10 +180,22 @@ while game:
         monster4.update()
 
         final.reset()
-    if sprite.collide_rect(player,monster) or sprite.collide_rect(player, w1) or sprite.collide_rect(player, w2) or sprite.collide_rect(player, w3) or sprite.collide_rect(player, w4) or sprite.collide_rect(player, w5) or sprite.collide_rect(player, w6) or sprite.collide_rect(player, w7) or sprite.collide_rect(player, w8) or sprite.collide_rect(player,monster2) or sprite.collide_rect(player,monster4):
+    if sprite.collide_rect(player,monster) or sprite.collide_rect(player,monster2) or sprite.collide_rect(player,monster4) or p == 0:
         finish = True
         window.blit(lose, (200, 200))
         kick.play()
+    if sprite.collide_rect(player,w1) or sprite.collide_rect(player,w6):
+        player.rect.y -= 15
+        amount_kill += 1
+    if sprite.collide_rect(player,w2) or sprite.collide_rect(player,w9) or sprite.collide_rect(player,w10) or sprite.collide_rect(player,w12):
+        player.rect.x += 15
+        amount_kill += 1
+    if sprite.collide_rect(player,w3) or sprite.collide_rect(player,w11):
+        player.rect.y += 15
+        amount_kill += 1
+    if sprite.collide_rect(player,w4) or sprite.collide_rect(player,w5) or sprite.collide_rect(player,w7) or sprite.collide_rect(player,w8):
+        player.rect.x -= 15
+        amount_kill += 1
     if sprite.collide_rect(player, final):
         finish = True
         window.blit(win, (200, 200))
